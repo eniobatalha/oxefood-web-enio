@@ -52,7 +52,8 @@ export default function FormEntregador() {
             rg: rg,
             dataNascimento: dataNascimento,
             foneCelular: foneCelular,
-            foneFixo: foneFixo
+            foneFixo: foneFixo,
+            qtdEntregasRealizadas: qtdEntregasRealizadas
         }
 
         if (idEntregador != null) { //Alteração:
