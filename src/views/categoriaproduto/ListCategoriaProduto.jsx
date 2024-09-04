@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button, Container, Divider, Header, Icon, Modal, Table } from 'semantic-ui-react';
 import MenuSistema from '../../MenuSistema';
-import { ENDERECO_API } from '../../views/util/Constantes';
 
 export default function ListCategoriaProduto () {
 
@@ -19,7 +18,7 @@ export default function ListCategoriaProduto () {
 
     function carregarLista () {
 
-        axios.get(ENDERECO_API + "api/categoriaproduto")
+        axios.get("http://localhost:8080/" + "api/categoriaproduto")
         .then((response) => {
             setLista(response.data)
         })
@@ -34,13 +33,13 @@ export default function ListCategoriaProduto () {
 
     async function remover() {
 
-        await axios.delete(ENDERECO_API + 'api/categoriaproduto/' + idRemover)
+        await axios.delete("http://localhost:8080/" + 'api/categoriaproduto/' + idRemover)
         .then((response) => {
     
             setOpenModal(false)
             console.log('Categoria de produto removida com sucesso.')
     
-            axios.get(ENDERECO_API + "api/categoriaproduto")
+            axios.get("http://localhost:8080/" + "api/categoriaproduto")
             .then((response) => {
                 setLista(response.data)
             })
@@ -73,7 +72,7 @@ export default function ListCategoriaProduto () {
                             icon='clipboard outline'
                             floated='right'
                             as={Link} 
-                            to='/form-categoria-produto'
+                            to='/form-categoriaproduto'
                         />
 
                         <br/><br/><br/>

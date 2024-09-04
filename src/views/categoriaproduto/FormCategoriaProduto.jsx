@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button, Container, Divider, Form, Icon } from 'semantic-ui-react';
 import MenuSistema from '../../MenuSistema';
-import { ENDERECO_API } from '../../views/util/Constantes';
 
 export default function FormCategoriaProduto () {
 
@@ -16,7 +15,7 @@ export default function FormCategoriaProduto () {
 
         if (state != null && state.id != null) {
 
-            axios.get(ENDERECO_API + "api/categoriaproduto/" + state.id)
+            axios.get("http://localhost:8080/" + "api/categoriaproduto/" + state.id)
             .then((response) => {
                 
                 setIdCategoria(response.data.id)
@@ -35,13 +34,13 @@ export default function FormCategoriaProduto () {
 
         if (idCategoria != null) { //Alteração:
 
-            axios.put(ENDERECO_API + "api/categoriaproduto/" + idCategoria, categoriaRequest)
+            axios.put("http://localhost:8080/" + "api/categoriaproduto/" + idCategoria, categoriaRequest)
 		    .then((response) => { console.log('Categoria de produto alterado com sucesso.') })
 		    .catch((error) => { console.log('Erro ao alter uma aategoria de produto.') })
 
         } else { //Cadastro:
         
-            axios.post(ENDERECO_API + "api/categoriaproduto", categoriaRequest)
+            axios.post("http://localhost:8080/" + "api/categoriaproduto", categoriaRequest)
 		    .then((response) => { console.log('Categoria de produto cadastrado com sucesso.') })
 		    .catch((error) => { console.log('Erro ao incluir a categoria de produto.') })
 
