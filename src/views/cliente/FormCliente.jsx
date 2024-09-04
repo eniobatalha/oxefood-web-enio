@@ -70,7 +70,7 @@ export default function FormCliente() {
                     navigate(`/list-cliente`);
                 })
                 .catch((error) => {
-                    console.log(error.response.data.message)
+                    // console.log(error.response.data.message)
                     if (error.response) {
                         notifyError(error.response.data.message)
                     } else {
