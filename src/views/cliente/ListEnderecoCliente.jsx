@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { Button, Container, Divider, Icon, Table, Modal, Header } from 'semantic-ui-react';
 import axios from 'axios';
 import MenuSistema from '../../MenuSistema';
+import { notify, notifyInfo, notifyWarn, notifyError, notifySuccess,  } from "../util/Util";
 
 export default function ListEnderecoCliente() {
     const [lista, setLista] = useState([]);
@@ -22,7 +23,12 @@ export default function ListEnderecoCliente() {
                 setLista(response.data);
             })
             .catch((error) => {
-                console.log('Erro ao carregar a lista de endereços do cliente:', error);
+                //console.log('Erro ao carregar a lista de endereços do cliente:', error);
+                if (error.response) {
+                    notifyError(error.response.data.message)
+                } else {
+                    notifyError("Erro ao carregar a lista de endereços do cliente.")
+                }
             });
     }
 
@@ -34,11 +40,17 @@ export default function ListEnderecoCliente() {
     async function remover() {
         await axios.delete(`http://localhost:8080/api/cliente/endereco/${idRemover}`)
             .then((response) => {
-                console.log('Endereço removido com sucesso.');
+                //console.log('Endereço removido com sucesso.');
+                notifySuccess('Endereço removido com sucesso.');
                 carregarLista(); // Recarrega a lista de endereços após a remoção
             })
             .catch((error) => {
-                console.log('Erro ao remover o endereço:', error);
+                //console.log('Erro ao remover o endereço:', error);
+                if (error.response) {
+                    notifyError(error.response.data.message)
+                } else {
+                    notifyError("Erro ao remover o endereço.")
+                }
             });
         setOpenModal(false);
     }

@@ -3,7 +3,8 @@ import { React, useEffect, useState } from "react";
 import InputMask from 'react-input-mask';
 import { Button, Container, Divider, Form, Icon } from 'semantic-ui-react';
 import MenuSistema from '../../MenuSistema';
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { notify, notifyInfo, notifyWarn, notifyError, notifySuccess,  } from "../util/Util";
 
 
 export default function FormEntregador() {
@@ -17,6 +18,8 @@ export default function FormEntregador() {
     const [qtdEntregasRealizadas, setqtdEntregasRealizadas] = useState();
     const { state } = useLocation();
     const [idEntregador, setIdEntregador] = useState();
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (state != null && state.id != null) {
@@ -58,12 +61,33 @@ export default function FormEntregador() {
 
         if (idEntregador != null) { //Alteração:
             axios.put("http://localhost:8080/api/entregador/" + idEntregador, entregadorRequest)
-                .then((response) => { console.log('Entregador alterado com sucesso.') })
-                .catch((error) => { console.log('Erro ao alterar um entregador.') })
+                .then((response) => {
+                    //console.log('Entregador alterado com sucesso.') 
+                    notifySuccess('Entregador alterado com sucesso.')
+                    navigate(`/list-entregador`);
+                })
+                .catch((error) => {
+                    //console.log('Erro ao alterar um entregador.') 
+                    if (error.response) {
+                        notifyError(error.response.data.message)
+                    } else {
+                        notifyError("Erro ao alterar um entregador.")
+                    }
+                })
         } else { //Cadastro:
             axios.post("http://localhost:8080/api/entregador", entregadorRequest)
-                .then((response) => { console.log('Entregador cadastrado com sucesso.') })
-                .catch((error) => { console.log('Erro ao incluir o entregador.') })
+                .then((response) => {
+                    //console.log('Entregador cadastrado com sucesso.')
+                    notifySuccess('Entregador cadastrado com sucesso.')
+                })
+                .catch((error) => {
+                    //console.log('Erro ao incluir o entregador.') 
+                    if (error.response) {
+                        notifyError(error.response.data.message)
+                    } else {
+                        notifyError("Erro ao incluir o entregador.")
+                    }
+                })
         }
     }
 

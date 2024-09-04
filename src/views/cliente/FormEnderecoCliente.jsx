@@ -4,6 +4,7 @@ import axios from 'axios';
 import { Button, Container, Divider, Form, Header, Icon } from 'semantic-ui-react';
 import InputMask from 'react-input-mask';
 import MenuSistema from '../../MenuSistema';
+import { notify, notifyInfo, notifyWarn, notifyError, notifySuccess,  } from "../util/Util";
 
 export default function FormEnderecoCliente() {
     const { clienteId, enderecoId } = useParams();
@@ -34,7 +35,12 @@ export default function FormEnderecoCliente() {
                     setIsEditing(true);
                 })
                 .catch(error => {
-                    console.log('Erro ao buscar o endereço:', error);
+                    //console.log('Erro ao buscar o endereço:', error);
+                    if (error.response) {
+                        notifyError(error.response.data.message)
+                    } else {
+                        notifyError("Erro ao buscar o endereço.")
+                    }
                 });
         }
     }, [enderecoId, clienteId, location.state]);
@@ -54,21 +60,33 @@ export default function FormEnderecoCliente() {
             // Atualizar o endereço existente
             axios.put(`http://localhost:8080/api/cliente/endereco/${enderecoId}`, endereco)
                 .then(response => {
-                    console.log('Endereço atualizado com sucesso.');
+                    //console.log('Endereço atualizado com sucesso.');
+                    notifySuccess('Endereço atualizado com sucesso.')
                     navigate(`/list-enderecocliente/${clienteId}`);
                 })
                 .catch(error => {
-                    console.log('Erro ao atualizar o endereço:', error);
+                    //console.log('Erro ao atualizar o endereço:', error);
+                    if (error.response) {
+                        notifyError(error.response.data.message)
+                    } else {
+                        notifyError("Erro ao atualizar o endereço.")
+                    }
                 });
         } else {
             // Criar um novo endereço
             axios.post(`http://localhost:8080/api/cliente/${clienteId}/enderecos`, endereco)
                 .then(response => {
-                    console.log('Endereço criado com sucesso.');
+                    //console.log('Endereço criado com sucesso.');
+                    notifySuccess('Endereço criado com sucesso.')
                     navigate(`/list-enderecocliente/${clienteId}`);
                 })
                 .catch(error => {
-                    console.log('Erro ao criar o endereço:', error);
+                    //console.log('Erro ao criar o endereço:', error);
+                    if (error.response) {
+                        notifyError(error.response.data.message)
+                    } else {
+                        notifyError("Erro ao criar o endereço.")
+                    }
                 });
         }
     }

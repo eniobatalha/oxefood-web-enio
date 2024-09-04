@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button, Container, Divider, Header, Icon, Modal, Table } from 'semantic-ui-react';
 import MenuSistema from '../../MenuSistema';
+import { notify, notifyInfo, notifyWarn, notifyError, notifySuccess,  } from "../util/Util";
 
 export default function ListFornecedor() {
 
@@ -32,7 +33,8 @@ export default function ListFornecedor() {
         await axios.delete('http://localhost:8080/api/fornecedor/' + idRemover)
             .then((response) => {
 
-                console.log('Fornecedor removido com sucesso.')
+                //console.log('Fornecedor removido com sucesso.')
+                notifySuccess('Fornecedor removido com sucesso.')
 
                 axios.get("http://localhost:8080/api/fornecedor")
                     .then((response) => {
@@ -40,7 +42,12 @@ export default function ListFornecedor() {
                     })
             })
             .catch((error) => {
-                console.log('Erro ao remover um fornecedor.')
+                //console.log('Erro ao remover um fornecedor.')
+                if (error.response) {
+                    notifyError(error.response.data.message)
+                } else {
+                    notifyError("Erro ao remover um fornecedor.")
+                }
             })
         setOpenModal(false)
     }
@@ -115,7 +122,7 @@ export default function ListFornecedor() {
                                                 title='Clique aqui para remover este fornecedor'
                                                 icon
                                                 onClick={e => confirmaRemover(fornecedor.id)}>
-                                                    <Icon name='trash' />
+                                                <Icon name='trash' />
                                             </Button>
 
                                         </Table.Cell>

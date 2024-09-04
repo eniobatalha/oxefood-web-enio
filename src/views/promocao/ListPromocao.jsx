@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button, Container, Divider, Header, Icon, Modal, Table } from 'semantic-ui-react';
 import MenuSistema from '../../MenuSistema';
+import { notifyError, notifySuccess } from "../util/Util";
 
 export default function ListPromocao() {
 
@@ -43,7 +44,8 @@ export default function ListPromocao() {
         await axios.delete('http://localhost:8080/api/promocao/' + idRemover)
             .then((response) => {
 
-                console.log('Promoção removida com sucesso.')
+                //console.log('Promoção removida com sucesso.')
+                notifySuccess('Promoção removida com sucesso.')
 
                 axios.get("http://localhost:8080/api/promocao")
                     .then((response) => {
@@ -51,7 +53,12 @@ export default function ListPromocao() {
                     })
             })
             .catch((error) => {
-                console.log('Erro ao remover uma promocao.')
+                //console.log('Erro ao remover uma promocao.')
+                if (error.response) {
+                    notifyError(error.response.data.message)
+                } else {
+                    notifyError("Erro ao remover uma promocao.")
+                }
             })
         setOpenModal(false)
     }

@@ -3,7 +3,8 @@ import { React, useEffect, useState } from "react";
 import InputMask from 'react-input-mask';
 import { Button, Container, Divider, Form, Icon } from 'semantic-ui-react';
 import MenuSistema from '../../MenuSistema';
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate} from "react-router-dom";
+import { notify, notifyInfo, notifyWarn, notifyError, notifySuccess,  } from "../util/Util";
 
 
 export default function FormFornecedor() {
@@ -17,6 +18,8 @@ export default function FormFornecedor() {
     const [telefoneFixo, setTelefoneFixo] = useState();
     const { state } = useLocation();
     const [idFornecedor, setIdFornecedor] = useState();
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (state != null && state.id != null) {
@@ -48,12 +51,34 @@ export default function FormFornecedor() {
 
         if (idFornecedor != null) { //Alteração:
             axios.put("http://localhost:8080/api/fornecedor/" + idFornecedor, fornecedorRequest)
-                .then((response) => { console.log('Fornecedor alterado com sucesso.') })
-                .catch((error) => { console.log('Erro ao alterar um fornecedor.') })
+                .then((response) => { 
+                    //console.log('Fornecedor alterado com sucesso.')
+                    notifySuccess('Fornecedor alterado com sucesso.')
+                    navigate(`/list-fornecedor`); 
+                })
+                .catch((error) => { 
+                    //console.log('Erro ao alterar um fornecedor.')
+                    if (error.response) {
+                        notifyError(error.response.data.message)
+                    } else {
+                        notifyError("Erro ao alterar um fornecedor.")
+                    }
+                })
         } else { //Cadastro:
             axios.post("http://localhost:8080/api/fornecedor", fornecedorRequest)
-                .then((response) => { console.log('Fornecedor cadastrado com sucesso.') })
-                .catch((error) => { console.log('Erro ao incluir o fornecedor.') })
+                .then((response) => { 
+                    //console.log('Fornecedor cadastrado com sucesso.') 
+                    notifySuccess('Fornecedor cadastrado com sucesso.')
+                    navigate(`/list-fornecedor`);
+                })
+                .catch((error) => { 
+                    //console.log('Erro ao incluir o fornecedor.') 
+                    if (error.response) {
+                        notifyError(error.response.data.message)
+                    } else {
+                        notifyError("Erro ao incluir o fornecedor.")
+                    }
+                })
         }
     }
 

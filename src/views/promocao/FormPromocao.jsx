@@ -3,7 +3,8 @@ import { React, useEffect, useState } from "react";
 import InputMask from 'react-input-mask';
 import { Button, Container, Divider, Form, Icon } from 'semantic-ui-react';
 import MenuSistema from "../../MenuSistema";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { notify, notifyInfo, notifyWarn, notifyError, notifySuccess,  } from "../util/Util";
 
 
 export default function FormPromocao() {
@@ -15,6 +16,8 @@ export default function FormPromocao() {
     const [valorDesconto, setValorDesconto] = useState();
     const { state } = useLocation();
     const [idPromocao, setIdPromocao] = useState();
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (state != null && state.id != null) {
@@ -52,12 +55,35 @@ export default function FormPromocao() {
 
         if (idPromocao != null) { //Alteração:
             axios.put("http://localhost:8080/api/promocao/" + idPromocao, promocaoRequest)
-                .then((response) => { console.log('Promoção alterada com sucesso.') })
-                .catch((error) => { console.log('Erro ao alterar a promoção.') })
+                .then((response) => { 
+                    //console.log('Promoção alterada com sucesso.')
+                    notifySuccess('Promoção alterada com sucesso.') 
+                    navigate(`/list-promocao`);
+
+                })
+                .catch((error) => { 
+                    //console.log('Erro ao alterar a promoção.') 
+                    if (error.response) {
+                        notifyError(error.response.data.message)
+                    } else {
+                        notifyError("Erro ao alterar a promoção.")
+                    }
+                })
         } else { //Cadastro:
             axios.post("http://localhost:8080/api/promocao", promocaoRequest)
-                .then((response) => { console.log('Promoção cadastrada com sucesso.') })
-                .catch((error) => { console.log('Erro ao incluir a promoção.') })
+                .then((response) => { 
+                    //console.log('Promoção cadastrada com sucesso.') 
+                    notifySuccess('Promoção cadastrada com sucesso.')
+                    navigate(`/list-promocao`);
+                })
+                .catch((error) => { 
+                    //console.log('Erro ao incluir a promoção.') 
+                    if (error.response) {
+                        notifyError(error.response.data.message)
+                    } else {
+                        notifyError("Erro ao incluir a promoção.")
+                    }
+                })
         }
     }
 

@@ -2,7 +2,8 @@ import axios from "axios";
 import { React, useEffect, useState } from "react";
 import { Button, Container, Divider, Form, Icon } from 'semantic-ui-react';
 import MenuSistema from "../../MenuSistema";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { notify, notifyInfo, notifyWarn, notifyError, notifySuccess,  } from "../util/Util";
 
 
 export default function FormProduto() {
@@ -18,6 +19,8 @@ export default function FormProduto() {
     const [tempoEntregaMaximo, setTempoEntregaMaximo] = useState();
     const [listaCategoria, setListaCategoria] = useState([]);
     const [idCategoria, setIdCategoria] = useState();
+
+    const navigate = useNavigate();
 
 
     useEffect(() => {
@@ -58,12 +61,34 @@ export default function FormProduto() {
 
         if (idProduto != null) { //Alteração:
             axios.put("http://localhost:8080/api/produto/" + idProduto, produtoRequest)
-                .then((response) => { console.log('Produto alterado com sucesso.') })
-                .catch((error) => { console.log('Erro ao alter um produto.') })
+                .then((response) => {
+                    //console.log('Produto alterado com sucesso.')
+                    notifySuccess('Produto alterado com sucesso.')
+                    navigate(`/list-produto`);
+                })
+                .catch((error) => {
+                    //console.log('Erro ao alterar um produto.')
+                    if (error.response) {
+                        notifyError(error.response.data.message)
+                    } else {
+                        notifyError("Erro ao alterar um produto.")
+                    }
+                })
         } else { //Cadastro:
             axios.post("http://localhost:8080/api/produto", produtoRequest)
-                .then((response) => { console.log('Produto cadastrado com sucesso.') })
-                .catch((error) => { console.log('Erro ao incluir o produto.') })
+                .then((response) => {
+                    //console.log('Produto cadastrado com sucesso.') 
+                    notifySuccess('Produto cadastrado com sucesso.')
+                    navigate(`/list-produto`);
+                })
+                .catch((error) => {
+                    //console.log('Erro ao incluir o produto.') 
+                    if (error.response) {
+                        notifyError(error.response.data.message)
+                    } else {
+                        notifyError("Erro ao incluir o produto.")
+                    }
+                })
         }
     }
 

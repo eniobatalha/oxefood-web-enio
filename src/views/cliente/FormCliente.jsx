@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import InputMask from 'react-input-mask';
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button, Container, Divider, Form, Icon } from 'semantic-ui-react';
 import MenuSistema from '../../MenuSistema';
 import { mensagemErro, notifyError, notifySuccess } from '../../views/util/Util';
@@ -16,6 +16,8 @@ export default function FormCliente() {
     const [dataNascimento, setDataNascimento] = useState();
     const [foneCelular, setFoneCelular] = useState();
     const [foneFixo, setFoneFixo] = useState();
+
+    const navigate = useNavigate();
 
     useEffect(() => {
 
@@ -50,12 +52,13 @@ export default function FormCliente() {
                 .then((response) => {
                     //console.log('Cliente alterado com sucesso.') 
                     notifySuccess('Cliente alterado com sucesso.')
+                    navigate(`/list-cliente`);
                 })
                 .catch((error) => {
                     if (error.response) {
                         notifyError(error.response.data.message)
                     } else {
-                        notifyError(mensagemErro)
+                        notifyError("Erro ao alterar um cliente.")
                     }
                 })
 
@@ -64,13 +67,14 @@ export default function FormCliente() {
             axios.post("http://localhost:8080/api/cliente", clienteRequest)
                 .then((response) => {
                     notifySuccess('Cliente cadastrado com sucesso.')
+                    navigate(`/list-cliente`);
                 })
                 .catch((error) => {
                     console.log(error.response.data.message)
                     if (error.response) {
                         notifyError(error.response.data.message)
                     } else {
-                        notifyError(mensagemErro)
+                        notifyError("Erro ao incluir um cliente.")
                     }
                 })
         }
