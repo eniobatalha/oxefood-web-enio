@@ -7,14 +7,18 @@ import { Link, useLocation } from "react-router-dom";
 
 export default function FormProduto() {
 
+    const { state } = useLocation();
+
+    const [idProduto, setIdProduto] = useState();
     const [codigo, setCodigo] = useState();
     const [titulo, setTitulo] = useState();
     const [descricao, setDescricao] = useState();
     const [valorUnitario, setValorUnitario] = useState();
     const [tempoEntregaMinimo, setTempoEntregaMinimo] = useState();
     const [tempoEntregaMaximo, setTempoEntregaMaximo] = useState();
-    const { state } = useLocation();
-    const [idProduto, setIdProduto] = useState();
+    const [listaCategoria, setListaCategoria] = useState([]);
+    const [idCategoria, setIdCategoria] = useState();
+
 
     useEffect(() => {
         if (state != null && state.id != null) {
@@ -27,13 +31,23 @@ export default function FormProduto() {
                     setValorUnitario(response.data.valorUnitario)
                     setTempoEntregaMinimo(response.data.tempoEntregaMinimo)
                     setTempoEntregaMaximo(response.data.tempoEntregaMaximo)
+                    setIdCategoria(response.data.categoria.id)
                 })
         }
+
+        axios.get("http://localhost:8080/api/categoriaproduto")
+            .then((response) => {
+                const dropDownCategorias = response.data.map(c => ({ text: c.descricao, value: c.id }));
+                setListaCategoria(dropDownCategorias);
+            })
+
+
     }, [state])
 
     function salvar() {
 
         let produtoRequest = {
+            idCategoria: idCategoria,
             codigo: codigo,
             titulo: titulo,
             descricao: descricao,
@@ -96,6 +110,23 @@ export default function FormProduto() {
                                     maxLength="100"
                                     value={titulo}
                                     onChange={(e) => setTitulo(e.target.value)}
+                                />
+
+                            </Form.Group>
+
+                            <Form.Group widhts='equal'>
+                                <Form.Select
+                                    required
+                                    fluid
+                                    tabIndex='3'
+                                    width={16}
+                                    placeholder='Selecione'
+                                    label='Categoria'
+                                    options={listaCategoria}
+                                    value={idCategoria}
+                                    onChange={(e, { value }) => {
+                                        setIdCategoria(value)
+                                    }}
                                 />
 
                             </Form.Group>

@@ -1,58 +1,54 @@
-import axios from 'axios';
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { Button, Container, Divider, Header, Icon, Modal, Table } from 'semantic-ui-react';
+import { Link, useParams } from "react-router-dom";
+import { Button, Container, Divider, Icon, Table, Modal, Header } from 'semantic-ui-react';
+import axios from 'axios';
 import MenuSistema from '../../MenuSistema';
 
-export default function ListProduto() {
-
+export default function ListEnderecoCliente() {
     const [lista, setLista] = useState([]);
     const [openModal, setOpenModal] = useState(false);
     const [idRemover, setIdRemover] = useState();
+    const { clienteId } = useParams(); // Extrai o clienteId da URL
 
     useEffect(() => {
-        carregarLista();
-    }, [])
+        if (clienteId) {
+            carregarLista();
+        }
+    }, [clienteId]);
 
     function carregarLista() {
-
-        axios.get("http://localhost:8080/api/produto")
+        axios.get(`http://localhost:8080/api/cliente/${clienteId}/enderecos`)
             .then((response) => {
-                setLista(response.data)
+                setLista(response.data);
             })
+            .catch((error) => {
+                console.log('Erro ao carregar a lista de endereços do cliente:', error);
+            });
     }
 
     function confirmaRemover(id) {
-        setOpenModal(true)
-        setIdRemover(id)
+        setOpenModal(true);
+        setIdRemover(id);
     }
 
     async function remover() {
-
-        await axios.delete('http://localhost:8080/api/produto/' + idRemover)
+        await axios.delete(`http://localhost:8080/api/cliente/endereco/${idRemover}`)
             .then((response) => {
-
-                console.log('Produto removido com sucesso.')
-
-                axios.get("http://localhost:8080/api/produto")
-                    .then((response) => {
-                        setLista(response.data)
-                    })
+                console.log('Endereço removido com sucesso.');
+                carregarLista(); // Recarrega a lista de endereços após a remoção
             })
             .catch((error) => {
-                console.log('Erro ao remover um produto.')
-            })
-        setOpenModal(false)
+                console.log('Erro ao remover o endereço:', error);
+            });
+        setOpenModal(false);
     }
 
     return (
         <div>
-            <MenuSistema tela={'produto'} />
+            <MenuSistema tela={'enderecocliente'} />
             <div style={{ marginTop: '3%' }}>
-
-                <Container textAlign='justified' >
-
-                    <h2> Produto </h2>
+                <Container textAlign='justified'>
+                    <h2> Endereços do Cliente </h2>
                     <Divider />
 
                     <div style={{ marginTop: '4%' }}>
@@ -63,65 +59,58 @@ export default function ListProduto() {
                             icon='clipboard outline'
                             floated='right'
                             as={Link}
-                            to='/form-produto'
+                            to={`/form-enderecocliente/${clienteId}/0`} // Passando o ID do cliente e 0 para um novo endereço
                         />
 
                         <br /><br /><br />
 
                         <Table color='orange' sortable celled>
-
                             <Table.Header>
                                 <Table.Row>
-                                    <Table.HeaderCell>Codigo</Table.HeaderCell>
-                                    <Table.HeaderCell>Categoria</Table.HeaderCell>
-                                    <Table.HeaderCell>Título</Table.HeaderCell>
-                                    <Table.HeaderCell>Descrição</Table.HeaderCell>
-                                    <Table.HeaderCell>Valor Unitário</Table.HeaderCell>
-                                    <Table.HeaderCell>Tempo Entrega Mínimo</Table.HeaderCell>
-                                    <Table.HeaderCell>Tempo Entrega Máximo</Table.HeaderCell>
+                                    <Table.HeaderCell>Rua</Table.HeaderCell>
+                                    <Table.HeaderCell>Número</Table.HeaderCell>
+                                    <Table.HeaderCell>Bairro</Table.HeaderCell>
+                                    <Table.HeaderCell>Cidade</Table.HeaderCell>
+                                    <Table.HeaderCell>Estado</Table.HeaderCell>
+                                    <Table.HeaderCell>CEP</Table.HeaderCell>
+                                    <Table.HeaderCell>Complemento</Table.HeaderCell>
                                     <Table.HeaderCell textAlign='center'>Ações</Table.HeaderCell>
                                 </Table.Row>
                             </Table.Header>
 
                             <Table.Body>
-
-                                {lista.map(produto => (
-
-                                    <Table.Row key={produto.id}>
-                                        <Table.Cell>{produto.codigo}</Table.Cell>
-                                        <Table.Cell>{produto.categoria.descricao}</Table.Cell>
-                                        <Table.Cell>{produto.titulo}</Table.Cell>
-                                        <Table.Cell>{produto.descricao}</Table.Cell>
-                                        <Table.Cell>{produto.valorUnitario}</Table.Cell>
-                                        <Table.Cell>{produto.tempoEntregaMinimo}</Table.Cell>
-                                        <Table.Cell>{produto.tempoEntregaMaximo}</Table.Cell>
+                                {lista.map(endereco => (
+                                    <Table.Row key={endereco.id}>
+                                        <Table.Cell>{endereco.rua}</Table.Cell>
+                                        <Table.Cell>{endereco.numero}</Table.Cell>
+                                        <Table.Cell>{endereco.bairro}</Table.Cell>
+                                        <Table.Cell>{endereco.cidade}</Table.Cell>
+                                        <Table.Cell>{endereco.estado}</Table.Cell>
+                                        <Table.Cell>{endereco.cep}</Table.Cell>
+                                        <Table.Cell>{endereco.complemento}</Table.Cell>
                                         <Table.Cell textAlign='center'>
-
                                             <Button
                                                 inverted
                                                 circular
                                                 color='green'
-                                                title='Clique aqui para editar os dados deste produto'
+                                                title='Clique aqui para editar os dados deste endereço'
                                                 icon>
-                                                <Link to="/form-produto" state={{ id: produto.id }} style={{ color: 'green' }}>
+                                                <Link to={`/form-enderecocliente/${clienteId}/${endereco.id}`} style={{ color: 'green' }}>
                                                     <Icon name='edit' />
                                                 </Link>
                                             </Button> &nbsp;
-
                                             <Button
                                                 inverted
                                                 circular
                                                 color='red'
-                                                title='Clique aqui para remover este produto'
+                                                title='Clique aqui para remover este endereço'
                                                 icon
-                                                onClick={e => confirmaRemover(produto.id)}>
-                                                    <Icon name='trash' />
+                                                onClick={e => confirmaRemover(endereco.id)}>
+                                                <Icon name='trash' />
                                             </Button>
-
                                         </Table.Cell>
                                     </Table.Row>
                                 ))}
-
                             </Table.Body>
                         </Table>
                     </div>
@@ -147,6 +136,5 @@ export default function ListProduto() {
                 </Modal.Actions>
             </Modal>
         </div>
-    )
+    );
 }
-

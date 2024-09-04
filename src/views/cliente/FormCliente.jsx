@@ -1,22 +1,26 @@
 import axios from "axios";
-import { React, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import InputMask from 'react-input-mask';
-import { Button, Container, Divider, Form, Icon } from 'semantic-ui-react';
-import MenuSistema from "../../MenuSistema";
 import { Link, useLocation } from "react-router-dom";
+import { Button, Container, Divider, Form, Icon } from 'semantic-ui-react';
+import MenuSistema from '../../MenuSistema';
+import { mensagemErro, notifyError, notifySuccess } from '../../views/util/Util';
 
 export default function FormCliente() {
+
+    const { state } = useLocation();
+    const [idCliente, setIdCliente] = useState();
 
     const [nome, setNome] = useState();
     const [cpf, setCpf] = useState();
     const [dataNascimento, setDataNascimento] = useState();
     const [foneCelular, setFoneCelular] = useState();
     const [foneFixo, setFoneFixo] = useState();
-    const { state } = useLocation();
-    const [idCliente, setIdCliente] = useState();
 
     useEffect(() => {
+
         if (state != null && state.id != null) {
+
             axios.get("http://localhost:8080/api/cliente/" + state.id)
                 .then((response) => {
                     setIdCliente(response.data.id)
@@ -27,17 +31,8 @@ export default function FormCliente() {
                     setFoneFixo(response.data.foneFixo)
                 })
         }
+
     }, [state])
-
-    function formatarData(dataParam) {
-
-        if (dataParam === null || dataParam === '' || dataParam === undefined) {
-            return ''
-        }
-
-        let arrayData = dataParam.split('-');
-        return arrayData[2] + '/' + arrayData[1] + '/' + arrayData[0];
-    }
 
     function salvar() {
 
@@ -50,22 +45,45 @@ export default function FormCliente() {
         }
 
         if (idCliente != null) { //Alteração:
+
             axios.put("http://localhost:8080/api/cliente/" + idCliente, clienteRequest)
                 .then((response) => {
-                    console.log('Cliente alterado com sucesso.')
+                    //console.log('Cliente alterado com sucesso.') 
+                    notifySuccess('Cliente alterado com sucesso.')
                 })
                 .catch((error) => {
-                    console.log('Erro ao alterar um cliente.')
+                    if (error.response) {
+                        notifyError(error.response.data.message)
+                    } else {
+                        notifyError(mensagemErro)
+                    }
                 })
+
         } else { //Cadastro:
+
             axios.post("http://localhost:8080/api/cliente", clienteRequest)
                 .then((response) => {
-                    console.log('Cliente cadastrado com sucesso.')
+                    notifySuccess('Cliente cadastrado com sucesso.')
                 })
                 .catch((error) => {
-                    console.log('Erro ao incluir o cliente.')
+                    console.log(error.response.data.message)
+                    if (error.response) {
+                        notifyError(error.response.data.message)
+                    } else {
+                        notifyError(mensagemErro)
+                    }
                 })
         }
+    }
+
+    function formatarData(dataParam) {
+
+        if (dataParam === null || dataParam === '' || dataParam === undefined) {
+            return ''
+        }
+
+        let arrayData = dataParam.split('-');
+        return arrayData[2] + '/' + arrayData[1] + '/' + arrayData[0];
     }
 
     return (
@@ -81,7 +99,7 @@ export default function FormCliente() {
                     {idCliente === undefined &&
                         <h2> <span style={{ color: 'darkgray' }}> Cliente &nbsp;<Icon name='angle double right' size="small" /> </span> Cadastro</h2>
                     }
-                    {idCliente !== undefined &&
+                    {idCliente != undefined &&
                         <h2> <span style={{ color: 'darkgray' }}> Cliente &nbsp;<Icon name='angle double right' size="small" /> </span> Alteração</h2>
                     }
 
@@ -99,7 +117,7 @@ export default function FormCliente() {
                                     label='Nome'
                                     maxLength="100"
                                     value={nome}
-                                    onChange={(e) => setNome(e.target.value)}
+                                    onChange={e => setNome(e.target.value)}
                                 />
 
                                 <Form.Input
@@ -110,13 +128,35 @@ export default function FormCliente() {
                                         required
                                         mask="999.999.999-99"
                                         value={cpf}
-                                        onChange={(e) => setCpf(e.target.value)}
+                                        onChange={e => setCpf(e.target.value)}
                                     />
                                 </Form.Input>
 
                             </Form.Group>
 
                             <Form.Group>
+
+                                <Form.Input
+                                    fluid
+                                    label='Fone Celular'
+                                    width={6}>
+                                    <InputMask
+                                        mask="(99) 9999.9999"
+                                        value={foneCelular}
+                                        onChange={e => setFoneCelular(e.target.value)}
+                                    />
+                                </Form.Input>
+
+                                <Form.Input
+                                    fluid
+                                    label='Fone Fixo'
+                                    width={6}>
+                                    <InputMask
+                                        mask="(99) 9999.9999"
+                                        value={foneFixo}
+                                        onChange={e => setFoneFixo(e.target.value)}
+                                    />
+                                </Form.Input>
 
                                 <Form.Input
                                     fluid
@@ -128,29 +168,7 @@ export default function FormCliente() {
                                         maskChar={null}
                                         placeholder="Ex: 20/03/1985"
                                         value={dataNascimento}
-                                        onChange={(e) => setDataNascimento(e.target.value)}
-                                    />
-                                </Form.Input>
-
-                                <Form.Input
-                                    fluid
-                                    label='Fone Celular'
-                                    width={6}>
-                                    <InputMask
-                                        mask="(99) 99999.9999"
-                                        value={foneCelular}
-                                        onChange={(e) => setFoneCelular(e.target.value)}
-                                    />
-                                </Form.Input>
-
-                                <Form.Input
-                                    fluid
-                                    label='Fone Fixo'
-                                    width={6}>
-                                    <InputMask
-                                        mask="(99) 9999.9999"
-                                        value={foneFixo}
-                                        onChange={(e) => setFoneFixo(e.target.value)}
+                                        onChange={e => setDataNascimento(e.target.value)}
                                     />
                                 </Form.Input>
 
@@ -167,11 +185,9 @@ export default function FormCliente() {
                                 icon
                                 labelPosition='left'
                                 color='orange'
-                                as={Link}
-                                to='/list-cliente'
                             >
                                 <Icon name='reply' />
-                                Voltar
+                                <Link to={'/list-cliente'}>Voltar</Link>
                             </Button>
 
                             <Button

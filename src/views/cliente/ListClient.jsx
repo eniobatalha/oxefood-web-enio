@@ -107,6 +107,20 @@ export default function ListCliente() {
                                             <Button
                                                 inverted
                                                 circular
+                                                color='blue'
+                                                title='Clique aqui para exibir os endereços deste cliente'
+                                                icon
+                                            >
+                                                <Link to={`/list-enderecocliente/${cliente.id}`} style={{ color: 'blue' }}>
+                                                    <Icon name='list' />
+                                                </Link>
+                                            </Button> &nbsp;
+
+
+
+                                            <Button
+                                                inverted
+                                                circular
                                                 color='green'
                                                 title='Clique aqui para editar os dados deste cliente'
                                                 icon>
